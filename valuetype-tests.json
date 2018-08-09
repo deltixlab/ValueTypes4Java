@@ -1,0 +1,51 @@
+{
+	"logEveryClass"         : false,
+	"ignoreByDefault"		: false,
+	"logAllMethods"         : false,
+	"logSuccesses"          : false,
+	"ignoreWarnings"        : [ "newArray" ],
+
+	"autoMethods" : [
+		"Ljava/lang/String; java.lang.Object.toString(LValueType;)",
+		"[LValueType; java/util/Arrays.copyOf([LValueType;I)",
+		"[LValueType; java.util.Arrays.copyOf([LValueType;ILjava/lang/Class;)",
+		"[LValueType; java.util.Arrays.copyOfRange([LValueType;II)",
+		"Z java/util/Arrays.equals([LValueType;[LValueType;)"
+	],
+
+	"logClasses" : [
+		"deltix/vtype/test/MethodCallsAutoMethodsTest",
+		"deltix/vtype/test/ArrayConversionTest$DummyList"
+	],
+
+	"mappings" :
+	[
+		{
+			"name"			: "deltix/dt/DateTime",
+			"implementation": "deltix/dt/Utils",
+			"box"			: "deltix/dt/DateTime deltix/dt/DateTime.create(J)",
+			"unbox"			: "J deltix/dt/DateTime.getLong(Ldeltix/dt/DateTime;)",
+			"boxArray"		: "[Ldeltix/dt/DateTime; deltix/dt/DateTime.fromLongArray([J)",
+			"unboxArray"	: "[J deltix/dt/DateTime.toLongArray([Ldeltix/dt/DateTime;)"
+		},
+		{
+			"name" 			: "deltix/vtype/ValueType64",
+			"implementation": "deltix/vtype/ValueType64Utils",
+			"box"			: "deltix/vtype/ValueType64 deltix/vtype/ValueType64.fromValue(J)",
+			"unbox"			: "J deltix/vtype/ValueType64.getValue(Ldeltix/vtype/ValueType64;)"
+		},
+		{
+			"name" 			: "deltix/dfp/Decimal64",
+			"implementation": "deltix/dfp/Decimal64Utils",
+
+			"box"			: "deltix/dfp/Decimal64 deltix/dfp/Decimal64.fromUnderlying(J)",
+			"unbox"			: "J deltix/dfp/Decimal64.toUnderlying(Ldeltix/dfp/Decimal64;)",
+
+			"boxArray"		: "[Ldeltix/dfp/Decimal64; deltix/dfp/Decimal64Utils.fromUnderlyingLongArray([J)",
+			"unboxArray"	: "[J deltix/dfp/Decimal64Utils.toUnderlyingLongArray([Ldeltix/dfp/Decimal64;)",
+
+			"methodSuffix"  : "Checked",
+			"staticMethodSuffix"  : ""
+		}
+	]
+}
