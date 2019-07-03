@@ -4,7 +4,7 @@
 https://github.com/deltixlab/ValueTypes4Java
 
 #### Obtaining Value Type Agent files
-You need two files, .jar file, containing VT agent and a JSON config file, containing description of 0 or more classes, representing value types.
+You need two files, .jar file, containing VT agent and JSON config file, containing description of 0 or more classes, representing value types.
 
 JAR file is built by `jar` Gradle task:
 `gradlew jar`
@@ -18,25 +18,26 @@ Minimal configuration file for working with deltix Decimal Floating Point packag
 	"mappings" :
 	[
 		{
-			"name" 			: "deltix/dfp/Decimal64",
-			"implementation"	: "deltix/dfp/Decimal64Utils",
-			"box"			: "deltix/dfp/Decimal64 deltix/decimal/Decimal64.fromUnderlying(J)",
-			"unbox"			: "J deltix/dfp/Decimal64.toUnderlying(Ldeltix/dfp/Decimal64;)",
-			"boxArray"		: "[Ldeltix/dfp/Decimal64; deltix/dfp/Decimal64Utils.fromUnderlyingLongArray([J)",
-			"unboxArray"		: "[J deltix/dfp/Decimal64Utils.toUnderlyingLongArray([Ldeltix/dfp/Decimal64;)",
+			"name"          : "deltix.dfp.Decimal64",
+			"implementation": "deltix.dfp.Decimal64Utils",
+			"box"           : "deltix.dfp.Decimal64 deltix.dfp.Decimal64.fromUnderlying(J)",
+			"unbox"         : "J deltix.dfp.Decimal64.toUnderlying(Ldeltix/dfp/Decimal64;)",
+			"boxArray"      : "[Ldeltix/dfp/Decimal64; deltix.dfp.Decimal64Utils.fromUnderlyingLongArray([J)",
+			"unboxArray"    : "[J deltix.dfp.Decimal64Utils.toUnderlyingLongArray([Ldeltix/dfp/Decimal64;)",
 
-			"methodSuffix"		: "Checked",
-			"staticMethodSuffix"	: ""
+			"methodSuffix"  : "Checked",
+			"staticMethodSuffix"  : ""
 		}
 	]
 }
 ```
+Download: [vt-decimal-min.json](../cfg/vt-decimal-min.json)
 
 #### Adding Value Type Agent to your project
 JAR file, containing the VT agent, is specified as a Java VM option, using `-javaagent` argument, and its config is given after `=` sign. Both paths can be absolute or relative. The path is usually relative to the project's root path.
 
 ##### Example for Idea(add to 'VM options' in Run/Debug configuration):
-`-javaagent:lib\deltix-value-types-0.9.1-SNAPSHOT.jar=cfg/vt-decimal-min.json`
+`-javaagent:lib/deltix-value-types-0.9.1-SNAPSHOT.jar=cfg/vt-decimal-min.json`
 
 ##### Example for Gradle:
 

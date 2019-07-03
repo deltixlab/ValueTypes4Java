@@ -23,6 +23,18 @@ public final class AgentPreMain {
     public static void premain(String args, Instrumentation instrumentation) throws Exception { // magic
 
         System.out.printf("VT Agent: Version %s started. premain() BEGIN%n", Version.version);
+        initAgent(args, instrumentation);
+        System.out.println("VT Agent: premain() END");
+    }
+
+    public static void agentmain(String args, Instrumentation instrumentation) throws Exception { // magic
+
+        System.out.printf("VT Agent: Version %s started. agentmain() BEGIN%n", Version.version);
+        initAgent(args, instrumentation);
+        System.out.println("VT Agent: agentmain() END");
+    }
+
+    private static void initAgent(String args, Instrumentation instrumentation) {
         try {
             // TODO: Low priority. Remove extra args if any, sanitize.
             ClassFileTransformer transformer = new ClassFileTransformer(args);
@@ -35,7 +47,5 @@ public final class AgentPreMain {
             e.printStackTrace();
             System.err.println("VT Agent initialization failed, instrumentation aborted");
         }
-
-        System.out.println("VT Agent: premain() END");
     }
 }
