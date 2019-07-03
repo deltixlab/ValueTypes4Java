@@ -36,4 +36,9 @@ public class MethodNameTransformer extends CachedStringConverter {
     protected String getValue(String desc) {
         return "$VT$" + Integer.toHexString(desc.hashCode());
     }
+
+    // Just a helper
+    public String transformIf(boolean b, String name, String desc) {
+        return !b ? name : transform(name, desc);
+    }
 }

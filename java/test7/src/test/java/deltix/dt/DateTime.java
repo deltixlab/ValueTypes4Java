@@ -126,4 +126,10 @@ public class DateTime {
     public String toString() {
         return Utils.toString(dt);
     }
+
+    @ValueType(impl="avgRenamed")
+    public DateTime avg(DateTime b) {
+        return create(Utils.avgRenamed(dt, b.dt));
+    }
+
 }

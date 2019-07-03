@@ -419,7 +419,6 @@ public abstract class CodeTransformerBase extends StackWalkHandler implements Va
      * @param node insert before this node
      * @param method method to insert
      * @param debugName arbitrary text name of the method to use for error output
-     * @return
      */
     protected void insertImplMethod(AbstractInsnNode node, MethodDef method, String debugName) {
         if (null == method) {
@@ -1838,7 +1837,7 @@ public abstract class CodeTransformerBase extends StackWalkHandler implements Va
         }
 
         if (0 != (checkResult & TypeIdCast.HAS_VTYPE) || isVt(methodArgs[0])) {
-            node.name = nameConverter.transform(node.name, node.desc);
+            node.name = nameConverter.transformIf(node.getOpcode() == INVOKESTATIC || shouldBeRenamed(node.name, node.desc), node.name, node.desc);
             node.desc = getTransformedDesc(node.desc, false, mapping);
         }
 
@@ -1970,11 +1969,13 @@ public abstract class CodeTransformerBase extends StackWalkHandler implements Va
             if (TypeIdCast.SUCCESS != (checkResult2 & ~HAS_VTYPE))
                 break;
 
-            node.name = nameConverter.transform(name, interfaceTypeDesc);
+            // TODO: Check if invokedynamic is correct after recent changes
+            node.name = nameConverter.transformIf(/*shouldBeRenamed(name, interfaceTypeDesc),*/true, name, interfaceTypeDesc);
+
             bsmArgs[0] = Type.getType(getTransformedDesc(interfaceTypeDesc, false, mapping));
             bsmArgs[1] = new Handle(bodyHandle.getTag(),
                     bodyHandle.getOwner(),
-                    nameConverter.transform(bodyHandle.getName(), bodyTypeDesc),
+                    nameConverter.transformIf(!isInstanceMethod || shouldBeRenamed(bodyHandle.getName(), bodyTypeDesc), bodyHandle.getName(), bodyTypeDesc),
                     getTransformedDesc(bodyTypeDesc, false, mapping),
                     bodyHandle.isInterface());
 
@@ -1983,6 +1984,11 @@ public abstract class CodeTransformerBase extends StackWalkHandler implements Va
         } while(false);
 
         applyMethodArgs(node, methodArgs, nMethodArgs, checkResult);
+    }
+
+
+    private boolean shouldBeRenamed(String name, String interfaceTypeDesc) {
+        return AsmUtil.shouldBeRenamed(name, interfaceTypeDesc, mapping);
     }
 
 

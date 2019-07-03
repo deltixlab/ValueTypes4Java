@@ -182,8 +182,9 @@ public class MethodDef {
         if (numArgs != numArgs2)
             throw new IllegalArgumentException(String.format("number of args mismatch between %s.%s and %s.%s", oldName, oldDesc, newName, newDesc));
 
+        // TODO: Verify support for using other value types in value type methods
         if (args[0] != args2[0]) {
-            if (!(isVt(args[0]) && ownerIndex == getVtClassIndex(args[0]) && newDesc.endsWith("J") && getArrayDepth(args[0]) == getArrayDepth(args2[0]))) {
+            if (!(isVt(args[0]) /*&& ownerIndex == getVtClassIndex(args[0])*/ && newDesc.endsWith("J") && getArrayDepth(args[0]) == getArrayDepth(args2[0]))) {
                 throw new IllegalArgumentException(String.format("return value mismatch between %s.%s and %s.%s", oldName, oldDesc, newName, newDesc));
             } else {
                 // Returns compatible integer representation or array of integers
@@ -192,10 +193,10 @@ public class MethodDef {
         }
 
         int numVTypeArgs = 0;
-        // TODO: Currently no support for using other value types in value type methods
+        // TODO: Verify support for using other value types in value type methods
         for (int i = 1; i <= numArgs; ++i) {
             if (args[i] != args2[i]) {
-                if (!(isVt(args[i]) && ownerIndex == getVtClassIndex(args[i]) && getArrayDepth(args[i]) == getArrayDepth(args2[i]))) {
+                if (!(isVt(args[i]) /*&& ownerIndex == getVtClassIndex(args[i])*/ && getArrayDepth(args[i]) == getArrayDepth(args2[i]))) {
                     throw new IllegalArgumentException(String.format("arg %d mismatch 0x%x <=> 0x%x between %s.%s and %s.%s",
                             i, args[i], args2[i], oldName, oldDesc, newName, newDesc));
                 } else {

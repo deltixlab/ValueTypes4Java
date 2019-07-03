@@ -16,6 +16,7 @@
 
 package deltix.vtype.transformer;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -40,7 +41,8 @@ public class Warnings {
     static final int FRAME_TRANSFORM    = 17;
     static final int FRAME_UNBOXING     = 18;
     static final int FRAME_BOXING       = 19;
-    static final int UNKNOWN            = 20;
+    static final int DELETED_SETTER     = 20;
+    static final int UNKNOWN            = 21;
 
     static final int WARNINGS_COUNT;
 
@@ -67,6 +69,7 @@ public class Warnings {
             "Stack Frame synchronization occurred",
             "unboxing Value Type on Stack Frame synchronization",
             "boxing Value Type on Stack Frame synchronization",
+            "conflicting setter deleted",
             "something suspicious is going on"
     };
 
@@ -91,6 +94,7 @@ public class Warnings {
             "frameSync",
             "frameSyncUnboxing",
             "frameSyncBoxing",
+            "setterDeleted",
             "genericWarning"
     };
 
@@ -115,6 +119,7 @@ public class Warnings {
             "initialize Value Types with ValueType constants, do not store ValueTypes to Objects",
             "initialize Value Types with ValueType constants, do not store ValueTypes to Objects",
             "initialize Value Types with ValueType constants, do not store ValueTypes to Objects",
+            "After ValueType translation conflicting setters that take long/long[] has to be removed. Maybe, delete the setter yourself",
             "Do something or complain to the developer",
     };
 
@@ -139,6 +144,8 @@ public class Warnings {
         assert(descs.length == names.length);
         assert(names.length == hints.length);
     }
+
+    private String suppressWarningsAnnotation;
 
 
     public Warnings() {
@@ -241,5 +248,47 @@ public class Warnings {
 
     public void setIgnoreMask(long ignoreMask) {
         this.ignoreMask = ignoreMask;
+    }
+
+    public void print(PrintStream out) {
+        int[] order = new int[WARNINGS_COUNT];
+
+        int n = 0;
+        for (int i = 0; i < WARNINGS_COUNT; i++) {
+            if (numOf(i) != 0) {
+                order[n++] = i;
+            }
+        }
+
+        for (int i = 0; i < n - 1; ++i) {
+            for (int j = n - 2; j >= i; --j) {
+                if (lines[first[order[j]]] > lines[first[order[j + 1]]]) {
+                    int tmp = order[j];
+                    order[j] = order[j + 1];
+                    order[j + 1] = tmp;
+                }
+            }
+        }
+
+        for (int ii = 0; ii < n; ++ii) {
+            int i = order[ii];
+            out.printf("    * %s in line(s): ", Warnings.descs[i]);
+            String separator = "";
+            Object prevData = null;
+            for (int j = 0, k = first[i]; k != 0; ++j, k = next[k]) {
+                Object data = this.data[k];
+                System.err.printf(null != data && !data.equals(prevData) ? "%s%d(%s)" : "%s%d", separator, lines[k],
+                        data);
+                prevData = data;
+                separator = ", ";
+            }
+
+            out.printf("%n    %s or suppress with @%s({\"%s\"})%n",
+                    hints[i], suppressWarningsAnnotation, names[i]);
+        }
+    }
+
+    public void setSuppressWarningsAnnotation(String suppressWarningsAnnotation) {
+        this.suppressWarningsAnnotation = suppressWarningsAnnotation;
     }
 }

@@ -133,7 +133,7 @@ public abstract class TypeId {
     }
 
     /**
-     * @return true for non-64-bit scalar (basic types except long&double, not objects)
+     * @return true for non-64-bit scalar (basic types except long &amp; double, not objects)
      */
     public static boolean isScalar32(int typeId) {
         return typeId != VOID && 0 == (typeId & ~F_TYPE_BITS);

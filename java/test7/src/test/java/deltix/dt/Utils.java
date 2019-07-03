@@ -162,4 +162,8 @@ final public class Utils {
     public static DateTime[] fromLongArray(long[] src) {
         return null == src ? null : fromLongArray(src, 0, new DateTime[src.length], 0, src.length);
     }
+
+    public static long avgRenamed(long dt, long dt1) {
+        return (dt + dt1) / 2;
+    }
 }

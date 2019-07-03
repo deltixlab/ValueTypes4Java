@@ -124,9 +124,11 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
 
             synchronized (lockObj) {
                 classDef = currentClassDef.get();
-                if (null != classDef && !(className.equals(classDef.getSrcClassPath()) || className.equals(classDef.getDstClassPath()))) {
+
+                if (null != classDef && (null == className || !(className.equals(classDef.getSrcClassPath()) || className.equals(classDef.getDstClassPath())))) {
                     classDef = null;
                 }
+
                 if (!initialized && null == classDef) {
                     if (mapping.logEveryClass) {
                         System.out.print(", Not Initialized - Will Ignore ");
@@ -157,10 +159,8 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
             // TODO: lambdas not processed
             if (null == className) {
                 if (mapping.logEveryClass) {
-                    System.out.print(", Empty Name - Will Ignore ");
+                    System.out.print("Processing anonymous class..");
                 }
-
-                return null;
             }
 
             if (mapping.isLoggedClass(className)) {
@@ -168,15 +168,23 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
             }
 
             // Skip some classes we are obviously not going to process
-            if (className.startsWith("java/")
+            if (null != className && (className.startsWith("java/")
                     || className.startsWith("sun/")
                     || className.startsWith("org/gradle/")
                     || className.startsWith("com/google/")
                     || className.startsWith("com/sun/")
                     || className.startsWith("deltix/vtype/transformer/")
-                    || mapping.isIgnoredClass(className)
+                    || mapping.isIgnoredClass(className))
                     )
                 return null;
+
+            if (null == classDef && mapping.isMappedClass(className)) {
+                if (mapping.logEveryClass) {
+                    System.out.println(", VType class already defined, ignored(not rescanned)");
+                }
+
+                return null;
+            }
 
             if (mapping.logEveryClass) {
                 System.out.print(", Creating ClassReader ");
@@ -190,6 +198,11 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
                     if (mapping.logEveryClass) {
                         System.out.print(", VType NOT Found! ");
                     }
+
+//                    if (null == className) {
+//                        // Log all anon classes for research
+//                        dumpClassData("$anon$/", className, classfileBuffer);
+//                    }
 
                     return null;
                 }
@@ -296,9 +309,28 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
     }
 
     private void dumpClassData(String className, byte[] data) {
+        dumpClassData("", className, data);
+    }
 
-        String filePath = mapping.classDumpPath + "/" + className;
+    private void dumpClassData(String pathPrefix, String className, byte[] data) {
+
+        if (null == mapping.classDumpPath)
+            return;
+
+        if (null == className) {
+            className = "$$lambda$$_" + Integer.toHexString(data.hashCode());
+
+//            for (int i = 1; i < Integer.MAX_VALUE; ++i) {
+//                File file = new File(String.format("%s/%s$$lambda$$_%d.class", mapping.classDumpPath, pathPrefix, i));
+//                if (!file.exists()) {
+//                    className = "$$lambda$$_" + i;
+//                    break;
+//                }
+//            }
+        }
+
         boolean again = false;
+        String filePath = mapping.classDumpPath + "/" + (pathPrefix != null ? pathPrefix : "") + className;
 
         while(true) {
             try {

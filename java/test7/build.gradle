@@ -45,7 +45,7 @@ test {
     def javaAllocationInstrumenterJar = configurations.testCompile.find {it.name.startsWith('java-allocation-instrumenter')}
     def vtAgentJar = configurations.testCompile.find {it.name.startsWith('deltix-value-types')}
 
-    def valueTypeAgent = '-javaagent:' + vtAgentJar + '=' + rootDir + "/valuetype-tests.json"
+    def valueTypeAgent = '-javaagent:' + vtAgentJar + '=' + rootDir + "/cfg/valuetype-tests.json"
     jvmArgs += valueTypeAgent
 
     def allocationAgent = '-javaagent:' + javaAllocationInstrumenterJar

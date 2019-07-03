@@ -202,8 +202,6 @@ public class Decimal64Utils {
         return !isInfinity(value) && !isNaN(value);
     }
 
-
-
     /// endregion
 
     /// region Comparison

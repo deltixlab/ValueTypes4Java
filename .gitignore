@@ -17,3 +17,5 @@
 .idea/
 .gradle/
 /out
+/vt-classes/
+Version.java

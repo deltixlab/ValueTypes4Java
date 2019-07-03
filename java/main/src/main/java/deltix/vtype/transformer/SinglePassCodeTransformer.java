@@ -43,7 +43,6 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
 
     protected void init(MethodNode method) {
 
-        if (logTrace) dbgBreak();
         super.init(method);
         initializeMethodArguments(vars, method, mapping);
         log.trace("Initial variable frame: %s", vars);
@@ -589,8 +588,7 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
 
         int aDst = vars.topDstAddr();
         // Try to add variable
-        vars.add(typeIdDst, null == name ? vm.nameAt(0) : name);
-
+        vars.add(typeIdDst, null == name && TypeId.VOID != typeIdSrc ? vm.nameAt(0) : name);
         if (TypeId.VOID != typeIdDst) {
             insertStoreVar(node, typeIdDst, aDst);
         }
@@ -624,8 +622,8 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
         if (count <= 0)
             return;
 
+        // Skip vars with matching types than don't need conversion. This operation is possibly redundant.
         int topSrc = vars.topSrcAddr();
-
         while (varAddr < topSrc && vars.typeBySrcAddr(varAddr) == frame.getId(frameAddr)) {
 
             varAddr = vars.nextSrcAddr(varAddr);
@@ -634,6 +632,7 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
                 return;
         }
 
+        // Index of the 1st var after the ones that will be transformed
         int firstPreserved = varAddr;
         for (int i = 0; i < count; i++) {
             firstPreserved = vars.nextSrcAddr(firstPreserved);
@@ -655,21 +654,17 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
         assert(firstPreserved == vars.topSrcAddr());
 
         for (int i = count - 1; i >= 0; --i) {
-            generateLocalVarPop(node, replacedVars.getId(i), replacedVars.getName(i));
+            int removedType = generateLocalVarPop(node, replacedVars.getId(i), replacedVars.getName(i));
+            assert(replacedVars.getId(i) == removedType);
         }
 
         assert(varAddr == vars.topSrcAddr());
 
-        //int numVarsOld = vars.numVars();
-        //int endOffset = varAddr + count;
-        //int numVarsNew = Math.max(endOffset, numVarsOld);
-        //int numPreservedBefore = Math.min(varAddr, numVarsOld);
-        //int numPreservedAfter = Math.max(numVarsOld - endOffset, 0);
-        //int[] varTypes = vars.getTypes();
-        //String[] varNames = vars.getNames();
-
         for (int i = 0; i < count; ++i) {
-            int typeIdSrc = vm.typeIdAt(0);
+            //int typeIdSrc = vm.typeIdAt(0);
+            int typeIdSrc = replacedVars.getId(i);
+            // TODO: make proper test
+
             int j = frameAddr + i;
             int typeIdDst = frame.getId(j);
             String name = frame.getName(j);
@@ -798,6 +793,7 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
             return;
         }
 
+        //dbgBreakAt( "testUninitializedVars3", 79, 80);
         boolean needs64BitTypeInsertionOrDeletion = false;
         for (int iSrc = 0, iDst = 0, nextSrc; iSrc < topSrc && iDst < nDst; iSrc = nextSrc, ++iDst) {
             int typeIdSrc = vars.typeBySrcAddr(iSrc);
@@ -807,10 +803,10 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
             if (TypeId.VOID != typeIdSrc && TypeId.VOID == typeIdDst) {
 
                 if (logDbg) {
-                    // Initialized 64-bit type becomes uninitialized (replaced with 2 "void" cells)?
                     log.dbg("Will uninitialize var[%d]: %x:%s , ", iSrc, typeIdSrc, vars.dbgNameBySrcAddr(iSrc));
                 }
 
+                // Initialized 64-bit type becomes uninitialized (replaced with 2 "void" cells)?
                 if (isSrc64(typeIdSrc)) {
                     // "Uninitialize" 64-bit type
                     if (iDst + 1 == nDst || TypeId.VOID != typesDst[iDst + 1]) {

@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 
 public class MappingParserTest {
     private final String classPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-    private final String path = classPath.substring(0, classPath.indexOf("/java/test") + 1);
+    private final String path = classPath.substring(0, classPath.indexOf("/java/test") + 1) + "cfg/";
     private final String configFileName = "valuetype-tests.json";
 
     @Test

@@ -162,6 +162,26 @@ public class DescriptorParser {
     }
 
 
+    /**
+     *
+     * @param desc method descriptor
+     * @return true, if the method takes long or long array
+     */
+    public static boolean isPossibleTransformedVtSetter(final String desc) {
+
+        int i = 0, n = desc.length();
+
+        if(n < 4 || desc.charAt(i++) != '(')
+            return false;
+
+        for (; i < n && '[' == desc.charAt(i); ++i);
+        if (i > n - 3 || desc.charAt(i) != 'J' || desc.charAt(i + 1) != ')')
+            return false;
+
+        return -1 == desc.indexOf(')', i + 2);
+    }
+
+
     public static String getTransformedDesc(final String desc, boolean isNonStaticVTypeMethod, final Mapping mapping) {
 
         StringBuffer newDesc = new StringBuffer(32);
@@ -316,5 +336,9 @@ public class DescriptorParser {
         }
 
         return parseMethod(parsedArgs, nThisArgs, desc, mapping);
+    }
+
+    public static boolean hasNoArgs(String desc) {
+        return desc.startsWith("()");
     }
 }

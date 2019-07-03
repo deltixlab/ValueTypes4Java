@@ -13,10 +13,6 @@
 		"Z java/util/Arrays.equals([LValueType;[LValueType;)"
 	],
 
-	"logClasses" : [
-		"deltix/vtype/test/MethodCallsAutoMethodsTest",
-		"deltix/vtype/test/ArrayConversionTest$DummyList"
-	],
 
 	"mappings" :
 	[
