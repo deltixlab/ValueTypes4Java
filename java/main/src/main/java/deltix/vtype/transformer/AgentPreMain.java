@@ -22,7 +22,7 @@ public final class AgentPreMain {
 
     public static void premain(String args, Instrumentation instrumentation) throws Exception { // magic
 
-        System.out.println("VT Agent: premain() BEGIN");
+        System.out.printf("VT Agent: Version %s started. premain() BEGIN%n", Version.version);
         try {
             // TODO: Low priority. Remove extra args if any, sanitize.
             ClassFileTransformer transformer = new ClassFileTransformer(args);
