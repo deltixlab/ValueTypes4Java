@@ -26,6 +26,9 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 
+import java.io.PrintStream;
+
+import static deltix.vtype.transformer.AsmUtil.shouldBeRenamed;
 import static org.objectweb.asm.Opcodes.*;
 
 
@@ -36,7 +39,7 @@ public class MethodNode extends org.objectweb.asm.tree.MethodNode {
 //    private static final int SRC_CLASS  = 2;
 //    private static final int DST_CLASS  = 3;
 
-    private static final String suppressWarningsAnnotation = "ValueTypeSuppressWarnings";
+    public static final String suppressWarningsAnnotation = "ValueTypeSuppressWarnings";
 
     private final CrudeLogger log;
     private final Mapping mapping;
@@ -73,7 +76,7 @@ public class MethodNode extends org.objectweb.asm.tree.MethodNode {
         this.mapping        = state.mapping;
         this.className      = state.classPath;
         this.shortClassName = AsmUtil.extractClassName(className);
-        this.warnings = state.warnings;
+        this.warnings       = state.warnings;
 
         boolean isClInit = name.equals("<clinit>");
         if ((isClInit || name.equals("<init>")) && null != (state.firstVtField[isClInit ? 1 : 0])) {
@@ -86,7 +89,7 @@ public class MethodNode extends org.objectweb.asm.tree.MethodNode {
         this.originalDesc = desc;
 
         if (DescriptorParser.findVtInMethodDesc(desc, mapping)) {
-            this.name = name = state.methodNameConverter.transform(name, desc);
+            this.name = name = state.methodNameConverter.transformIf(0 != (ACC_STATIC & access) || shouldBeRenamed(name, desc, mapping), name, desc);
             this.desc = desc = DescriptorParser.getTransformedDesc(desc, false, mapping);
         }
 
@@ -276,41 +279,8 @@ public class MethodNode extends org.objectweb.asm.tree.MethodNode {
                 System.err.printf("VT Agent warnings for method: %s.%s:%n",
                         className.replace('/', '.'), originalName);
 
-                int[] order = new int[warnings.WARNINGS_COUNT];
-
-                int n = 0;
-                for (int i = 0; i < warnings.WARNINGS_COUNT; i++) {
-                    if (warnings.numOf(i) != 0) {
-                        order[n++] = i;
-                    }
-                }
-
-                for (int i = 0; i < n - 1; ++i) {
-                    for (int j = n - 2; j >= i; --j) {
-                        if (warnings.lines[warnings.first[order[j]]] > warnings.lines[warnings.first[order[j + 1]]]) {
-                            int tmp = order[j];
-                            order[j] = order[j + 1];
-                            order[j + 1] = tmp;
-                        }
-                    }
-                }
-
-                for (int ii = 0; ii < n; ++ii) {
-                    int i = order[ii];
-                    System.err.printf("    * %s in line(s): ", Warnings.descs[i]);
-                    String separator = "";
-                    Object prevData = null;
-                    for (int j = 0, k = warnings.first[i]; k != 0; ++j, k = warnings.next[k]) {
-                        Object data = warnings.data[k];
-                        System.err.printf(null != data && !data.equals(prevData) ? "%s%d(%s)" : "%s%d", separator, warnings.lines[k],
-                                data);
-                        prevData = data;
-                        separator = ", ";
-                    }
-
-                    System.err.printf("%n    %s or suppress with @%s({\"%s\"})%n",
-                            Warnings.hints[i], suppressWarningsAnnotation, Warnings.names[i]);
-                }
+                warnings.setSuppressWarningsAnnotation(suppressWarningsAnnotation);
+                warnings.print(System.err);
             }
 
             state.classWasTransformed = true;

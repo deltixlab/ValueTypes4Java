@@ -43,7 +43,6 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
 
     protected void init(MethodNode method) {
 
-        if (logTrace) dbgBreak();
         super.init(method);
         initializeMethodArguments(vars, method, mapping);
         log.trace("Initial variable frame: %s", vars);
@@ -662,7 +661,10 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
         assert(varAddr == vars.topSrcAddr());
 
         for (int i = 0; i < count; ++i) {
+            //int typeIdSrc = vm.typeIdAt(0);
             int typeIdSrc = replacedVars.getId(i);
+            // TODO: make proper test
+
             int j = frameAddr + i;
             int typeIdDst = frame.getId(j);
             String name = frame.getName(j);
@@ -791,6 +793,7 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
             return;
         }
 
+        //dbgBreakAt( "testUninitializedVars3", 79, 80);
         boolean needs64BitTypeInsertionOrDeletion = false;
         for (int iSrc = 0, iDst = 0, nextSrc; iSrc < topSrc && iDst < nDst; iSrc = nextSrc, ++iDst) {
             int typeIdSrc = vars.typeBySrcAddr(iSrc);
@@ -800,10 +803,10 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
             if (TypeId.VOID != typeIdSrc && TypeId.VOID == typeIdDst) {
 
                 if (logDbg) {
-                    // Initialized 64-bit type becomes uninitialized (replaced with 2 "void" cells)?
                     log.dbg("Will uninitialize var[%d]: %x:%s , ", iSrc, typeIdSrc, vars.dbgNameBySrcAddr(iSrc));
                 }
 
+                // Initialized 64-bit type becomes uninitialized (replaced with 2 "void" cells)?
                 if (isSrc64(typeIdSrc)) {
                     // "Uninitialize" 64-bit type
                     if (iDst + 1 == nDst || TypeId.VOID != typesDst[iDst + 1]) {

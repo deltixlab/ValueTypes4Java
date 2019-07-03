@@ -27,6 +27,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static deltix.vtype.type.DescriptorParser.findVtInMethodDesc;
+import static deltix.vtype.type.DescriptorParser.getTransformedDesc;
+import static deltix.vtype.type.DescriptorParser.isPossibleTransformedVtSetter;
 import static deltix.vtype.type.TypeId.*;
 import static org.objectweb.asm.Opcodes.*;
 
@@ -431,5 +434,36 @@ public class AsmUtil {
     public static int parseMethod(int[] methodArgs, MethodInsnNode node, Mapping mapping) {
 
         return parseMethod(methodArgs, node.getOpcode(), node.owner, node.desc, mapping);
+    }
+
+    public static boolean shouldBeRenamed(String name, String desc, Mapping mapping) {
+        return !DescriptorParser.hasNoArgs(desc) && !appearsToBeVtSetter(name, desc, mapping);
+    }
+
+    public static boolean isSetterName(String name) {
+        return name.length() > 3 && name.startsWith("set")
+                && (!Character.isAlphabetic(name.codePointAt(3)) || Character.isUpperCase(name.codePointAt(3)));
+    }
+
+    public static boolean isSetterFlags(int access) {
+        return 0 == (access & (ACC_STATIC | ACC_BRIDGE));
+    }
+
+    public static boolean appearsToBeVtSetter(int access, String name, String desc, Mapping mapping) {
+
+        return isSetterFlags(access) && appearsToBeVtSetter(name, desc, mapping);
+    }
+
+    public static boolean possibleTransformedVtSetter(int access, String name, String desc, Mapping mapping) {
+        return isSetterFlags(access) && isSetterName(name)
+                && isPossibleTransformedVtSetter(desc) && !findVtInMethodDesc(desc, mapping);
+    }
+
+    public static boolean appearsToBeVtSetter(String name, String desc, Mapping mapping) {
+
+        return isSetterName(name)
+                && findVtInMethodDesc(desc, mapping)
+                //&& !newDesc.equals(desc)
+                && isPossibleTransformedVtSetter(getTransformedDesc(desc, false, mapping));
     }
 }

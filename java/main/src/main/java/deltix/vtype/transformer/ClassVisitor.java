@@ -24,6 +24,9 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
+import java.util.HashSet;
+
+import static org.objectweb.asm.Opcodes.ACC_BRIDGE;
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
 
 public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
@@ -38,7 +41,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     private final boolean isDstClass;
     boolean isClassTransformed   /*mapping.verifyAllMethods */;
     boolean printEndOfProcessingMessage = false;
-
+    private HashSet<String> transformedSetters = new HashSet<>();
 
     public ClassVisitor(final int api, final org.objectweb.asm.ClassVisitor cv, TranslationState state) {
         super(api, cv);
@@ -92,9 +95,47 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
             return mv;
         }
 
-
         checkIfJustStarted();
+
+        if (appearsToBeVtSetter(access, name, desc)) {
+            String newDesc = getTransformedDesc(desc);
+            if (hasTransformedSetter(name, newDesc))
+                return methodDeleted(name, newDesc);
+
+            transformedSetters.add(makeSetterSignature(name, newDesc));
+        } else if (possibleTransformedVtSetter(access, name, desc)) {
+            if (hasTransformedSetter(name, getTransformedDesc(desc)))
+                return methodDeleted(name, desc);
+
+            transformedSetters.add(makeSetterSignature(name, desc));
+        }
+
         return new MethodNode(state, access, name, desc, signature, exceptions, cv);
+    }
+
+    private static String makeSetterSignature(String name, String desc) {
+        return name + desc.substring(0, desc.indexOf(')') + 1);
+    }
+
+    private MethodVisitor methodDeleted(String name, String desc) {
+        System.err.printf("VT Agent: DELETED setter: %s.%s%s !%n", className, name, desc);
+        return null;
+    }
+
+    private boolean hasTransformedSetter(String name, String desc) {
+        return transformedSetters.contains(name + desc.substring(0, desc.indexOf(')') + 1));
+    }
+
+    private String getTransformedDesc(String desc) {
+        return DescriptorParser.getTransformedDesc(desc,false, mapping);
+    }
+
+    private boolean appearsToBeVtSetter(int access, String name, String desc) {
+        return AsmUtil.appearsToBeVtSetter(access, name, desc, mapping);
+    }
+
+    private boolean possibleTransformedVtSetter(int access, String name, String desc) {
+        return AsmUtil.possibleTransformedVtSetter(access, name, desc, mapping);
     }
 
     private void checkIfJustStarted() {
@@ -119,6 +160,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
                 desc = mapping.typeIdToDstTypeDesc(typeId);
 
                 if (TypeId.isVtValue(typeId)) {
+                    // We register scalar VT fields to later add NULL-initialization code for them etc.
                     state.registerScalarVtField(typeId, name, 0 != (access & ACC_STATIC) ? 1 : 0);
                 }
 
