@@ -57,6 +57,36 @@ public class VariableFrameTest {
         // AssertTrue(c == 10);
     }
 
+
+    @Test
+    @ValueTypeTrace
+    /**
+     * This code is supposed to generate non-trivial stack frame changes when ValueType variable is suddenly initialized in the inner block
+     */
+    public void testUninitializedVars3() {
+        int a, b, c;
+        DateTime dt0;
+        int d = 3;
+        int e, f, g;
+
+        {
+            DateTime dt1;
+            c = 0;
+            while (c < 10) {
+                DateTime dt2 = DateTime.now();
+                String s = "1234";
+                ++c;
+                if (c == 5) {
+                    dt0 = DateTime.NULL;
+                }
+            }
+        }
+
+        String s1, s2;
+        DateTime dt = DateTime.now();
+        a = g = 42;
+    }
+
     @Test
     public void testUninitialized64BitVars1() {
         double d;

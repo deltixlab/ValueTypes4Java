@@ -182,7 +182,7 @@ public class VariableMapV2 implements VariableMap, VariableMapDbg {
 
         // TODO: Remove after debugging
         //if (!isHead(src2dstAddr[aSrc])) {
-            //throw new IllegalStateException("Should be a HEAD entry");
+        //throw new IllegalStateException("Should be a HEAD entry");
         //}
 
         assert (isHead(aDst) || (isHead(src2dstAddr[aSrc - 1])));
@@ -273,7 +273,8 @@ public class VariableMapV2 implements VariableMap, VariableMapDbg {
     }
 
     /**
-     * remove variable without modifying top src/dst addresses
+     * remove variable starting at address
+     * does not modify top src/dst addresses, but may modify used/free var counters
      * @param aSrc source address of the variable
      */
     private void eraseNonEmptyVar(int aSrc) {
@@ -315,16 +316,21 @@ public class VariableMapV2 implements VariableMap, VariableMapDbg {
         }
     }
 
-
+    /**
+     * check, if a variable occupies the specified address, erase, if needed
+     * does not modify top src/dst addresses, but may modify used/free var counters
+     * @param aSrc source address of the variable
+     */
     private void eraseAddress(int aSrc) {
 
         int aDst = src2dstAddr[aSrc];
         if (EMPTY == aDst)
             return;
 
-        if (aDst < 0) {
+        // Tail?
+        if (!isHead(aDst)) {
             assert (aSrc > 0 && aDst != EMPTY);
-            aSrc = aDst & ~E;
+            aSrc = aDst & ~E; // Obtain head address of the var being erased
         } else  {
             if (TypeId.VOID == types[aSrc])
                 return;
@@ -382,11 +388,20 @@ public class VariableMapV2 implements VariableMap, VariableMapDbg {
         int dstSize = dstTypeSize(typeId);
         int srcSize = TypeId.size32Src(typeId);
 
+        // Grow top?
         if (aSrc + srcSize > topSrcAddr) {
-            assert(topDstAddr == aDst);
+            if (aSrc < topSrcAddr) {
+                eraseAddress(aSrc); // Note that this should have adjusted topDstAddr
+                aDst = src2dstAddr[aSrc];
+                assert(aDst >= 0);
+                assert(aDst < topDstAddr);
+            } else
+                assert(topDstAddr == aDst);
+
             // new variable, grow the top
-            topSrcAddr += srcSize;
-            numEmptyVars += srcSize;
+            int newTopSrc = aSrc + srcSize;
+            numEmptyVars += (newTopSrc - topSrcAddr);
+            topSrcAddr = newTopSrc;
             topDstAddr = aDst + dstSize;
             checkAlloc(topSrcAddr, topDstAddr);
         } else {
@@ -576,30 +591,17 @@ public class VariableMapV2 implements VariableMap, VariableMapDbg {
      * @param name
      * @return
      */
+    // TODO: Maybe remove this method
     public boolean replaceVarBySrcAddr(int aSrc, int typeId, String name) {
 
         int oldTypeId = types[aSrc];
-
-        // TODO: This restriction is temporary, should be removed to support some rare cases
-        assert (oldTypeId >= 0 && src2dstAddr[aSrc] >= EMPTY);
-
-        // We only support replacement with var having the same "original" size. TODO: Remove restriction after debugging
-//        if (TypeId.isSrc64(oldTypeId) != TypeId.isSrc64(typeId)) {
-//            return false;
-//        }
+        assert (src2dstAddr[aSrc] >= EMPTY);
 
         int aDst = src2dstAddr[aSrc];
         assert(aDst >= 0);
         if (aDst < 0)
             return false;
 
-//        if (TypeId.isSrc64(typeId)) {
-//            assert (TypeId.F64 == typeId || TypeId.I64 == typeId);
-//            putVar(aSrc, aDst, typeId, name);
-//            return true;
-//        }
-//
-//        assert(!TypeId.isSrc64(typeId) && !TypeId.isSrc64(oldTypeId));
         putVar(aSrc, aDst, typeId, name);
         return true;
     }
