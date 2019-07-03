@@ -4,12 +4,12 @@
 	"mappings" :
 	[
 		{
-			"name"          : "deltix.decimal.Decimal64",
-			"implementation": "deltix.decimal.Decimal64Utils",
-			"box"           : "deltix.decimal.Decimal64 deltix.decimal.Decimal64.fromUnderlying(J)",
-			"unbox"         : "J deltix/decimal/Decimal64.toUnderlying(Ldeltix/decimal/Decimal64;)",
-			"boxArray"      : "[Ldeltix/dfp/Decimal64; deltix/dfp/Decimal64Utils.fromUnderlyingLongArray([J)",
-			"unboxArray"    : "[J deltix/dfp/Decimal64Utils.toUnderlyingLongArray([Ldeltix/dfp/Decimal64;)",
+			"name"          : "deltix.dfp.Decimal64",
+			"implementation": "deltix.dfp.Decimal64Utils",
+			"box"           : "deltix.dfp.Decimal64 deltix.dfp.Decimal64.fromUnderlying(J)",
+			"unbox"         : "J deltix.dfp.Decimal64.toUnderlying(Ldeltix/dfp/Decimal64;)",
+			"boxArray"      : "[Ldeltix/dfp/Decimal64; deltix.dfp.Decimal64Utils.fromUnderlyingLongArray([J)",
+			"unboxArray"    : "[J deltix.dfp.Decimal64Utils.toUnderlyingLongArray([Ldeltix/dfp/Decimal64;)",
 
 			"methodSuffix"  : "Checked",
 			"staticMethodSuffix"  : ""
