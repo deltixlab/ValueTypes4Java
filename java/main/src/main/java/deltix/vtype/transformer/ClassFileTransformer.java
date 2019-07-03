@@ -178,6 +178,14 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
                     )
                 return null;
 
+            if (null == classDef && mapping.isMappedClass(className)) {
+                if (mapping.logEveryClass) {
+                    System.out.println(", VType class already defined, ignored(not rescanned)");
+                }
+
+                return null;
+            }
+
             if (mapping.logEveryClass) {
                 System.out.print(", Creating ClassReader ");
             }

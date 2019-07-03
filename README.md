@@ -17,7 +17,7 @@ ASM framework is used to perform the code transformation. Efforts were made to e
 
 ###### Add agent jar and the JSON config file path to JVM options
 
-`-javaagent:java\build\libs\deltix-vtype-0.9.0.jar=cfg/valuetypes.json`
+`-javaagent:java\build\libs\deltix-vtype-0.9.1.jar=cfg/valuetypes.json`
 
 Example configuration files are supplied with the project as reference.
 
@@ -107,6 +107,7 @@ Value Type Agent
 ### Version history:
 
 * V0.9.1 OSS
+  - 
   - Suspected accessor methods are not renamed anymore. ValueType setter overrides Long setter by default.
   - All instance methods that return ValueType/VT array and take no args are considered getters and not renamed.
   - All instance methods that start with "set" followed by uppercase letter, take exactly 1 ValueType/VT array and return _anything_ are considered setters and are not renamed

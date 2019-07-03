@@ -20,14 +20,14 @@ import java.lang.instrument.Instrumentation;
 
 public final class AgentPreMain {
 
-    public static void premain(String args, Instrumentation instrumentation) throws Exception { // magic
+    public static void premain(String args, Instrumentation instrumentation) throws Exception {
 
         System.out.printf("VT Agent: Version %s started. premain() BEGIN%n", Version.version);
         initAgent(args, instrumentation);
         System.out.println("VT Agent: premain() END");
     }
 
-    public static void agentmain(String args, Instrumentation instrumentation) throws Exception { // magic
+    public static void agentmain(String args, Instrumentation instrumentation) throws Exception {
 
         System.out.printf("VT Agent: Version %s started. agentmain() BEGIN%n", Version.version);
         initAgent(args, instrumentation);
