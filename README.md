@@ -106,5 +106,14 @@ Value Type Agent
 
 ### Version history:
 
+* V0.9.1 OSS
+  - Suspected accessor methods are not renamed anymore. ValueType setter overrides Long setter by default.
+  - All instance methods that return ValueType/VT array and take no args are considered getters and not renamed.
+  - All instance methods that start with "set" followed by uppercase letter, take exactly 1 ValueType/VT array and return _anything_ are considered setters and are not renamed
+  - In the case of transformed setter signature collision with setter that takes long/long array, first found method takes priority.
+  - Warning is displayed when setter name collision occurs and redundant setter is deleted.
+  - Bugfixes in local variable frame tracking
+  - Bugfixes for Java 8 lambdas.
+
 * V0.9 OSS
   - Released as Open Source project under Apache 2.0 license

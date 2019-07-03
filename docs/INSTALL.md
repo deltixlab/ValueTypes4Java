@@ -36,7 +36,7 @@ Minimal configuration file for working with deltix Decimal Floating Point packag
 JAR file, containing the VT agent, is specified as a Java VM option, using `-javaagent` argument, and its config is given after `=` sign. Both paths can be absolute or relative. The path is usually relative to the project's root path.
 
 ##### Example for Idea(add to 'VM options' in Run/Debug configuration):
-`-javaagent:lib\deltix-value-types-0.8.9-SNAPSHOT.jar=vt-decimal-min.json`
+`-javaagent:lib\deltix-value-types-0.9.1-SNAPSHOT.jar=cfg/vt-decimal-min.json`
 
 ##### Example for Gradle:
 
