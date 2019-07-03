@@ -419,7 +419,6 @@ public abstract class CodeTransformerBase extends StackWalkHandler implements Va
      * @param node insert before this node
      * @param method method to insert
      * @param debugName arbitrary text name of the method to use for error output
-     * @return
      */
     protected void insertImplMethod(AbstractInsnNode node, MethodDef method, String debugName) {
         if (null == method) {

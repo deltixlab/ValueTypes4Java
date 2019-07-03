@@ -478,7 +478,7 @@ public class VariableMapV2 implements VariableMap, VariableMapDbg {
     /**
      * Remove last registered variable(s)
      * @param n number of variables to remove
-     * @return typeId of the last removed variable (variable with lowest index, if n > 1)
+     * @return typeId of the last removed variable (variable with lowest index, if n &gt; 1)
      */
     public int removeLast(int n) {
 

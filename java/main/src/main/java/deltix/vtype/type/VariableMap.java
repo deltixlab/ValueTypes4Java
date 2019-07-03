@@ -59,7 +59,7 @@ public interface VariableMap {
     /**
      * Remove last registered variable(s) and incrementally adjust index tables accordingly,
      * @param n number of variables to remove
-     * @return typeId of the last removed variable (variable with lowest index, if n > 1)
+     * @return typeId of the last removed variable (variable with lowest index, if n &gt; 1)
      */
     int removeLast(int n);
 
