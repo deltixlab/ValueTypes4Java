@@ -285,8 +285,8 @@ public class ClassDef {
             methodName = preferredName;
         }
 
-
-        addNameMapping(mdef, methodName + (!isStatic ? methodSuffix : staticMethodSuffix) + newDesc);
+        // Preferred name overrides suffixes.
+        addNameMapping(mdef, methodName + (null != preferredName ? "" : !isStatic ? methodSuffix : staticMethodSuffix) + newDesc);
     }
 
     private void addNameMapping(MethodDef mdef, String dstMethodSignature) {
