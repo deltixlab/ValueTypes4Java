@@ -589,8 +589,7 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
 
         int aDst = vars.topDstAddr();
         // Try to add variable
-        vars.add(typeIdDst, null == name ? vm.nameAt(0) : name);
-
+        vars.add(typeIdDst, null == name && TypeId.VOID != typeIdSrc ? vm.nameAt(0) : name);
         if (TypeId.VOID != typeIdDst) {
             insertStoreVar(node, typeIdDst, aDst);
         }
@@ -624,8 +623,8 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
         if (count <= 0)
             return;
 
+        // Skip vars with matching types than don't need conversion. This operation is possibly redundant.
         int topSrc = vars.topSrcAddr();
-
         while (varAddr < topSrc && vars.typeBySrcAddr(varAddr) == frame.getId(frameAddr)) {
 
             varAddr = vars.nextSrcAddr(varAddr);
@@ -634,6 +633,7 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
                 return;
         }
 
+        // Index of the 1st var after the ones that will be transformed
         int firstPreserved = varAddr;
         for (int i = 0; i < count; i++) {
             firstPreserved = vars.nextSrcAddr(firstPreserved);
@@ -655,21 +655,14 @@ public class SinglePassCodeTransformer extends CodeTransformerBase {
         assert(firstPreserved == vars.topSrcAddr());
 
         for (int i = count - 1; i >= 0; --i) {
-            generateLocalVarPop(node, replacedVars.getId(i), replacedVars.getName(i));
+            int removedType = generateLocalVarPop(node, replacedVars.getId(i), replacedVars.getName(i));
+            assert(replacedVars.getId(i) == removedType);
         }
 
         assert(varAddr == vars.topSrcAddr());
 
-        //int numVarsOld = vars.numVars();
-        //int endOffset = varAddr + count;
-        //int numVarsNew = Math.max(endOffset, numVarsOld);
-        //int numPreservedBefore = Math.min(varAddr, numVarsOld);
-        //int numPreservedAfter = Math.max(numVarsOld - endOffset, 0);
-        //int[] varTypes = vars.getTypes();
-        //String[] varNames = vars.getNames();
-
         for (int i = 0; i < count; ++i) {
-            int typeIdSrc = vm.typeIdAt(0);
+            int typeIdSrc = replacedVars.getId(i);
             int j = frameAddr + i;
             int typeIdDst = frame.getId(j);
             String name = frame.getName(j);
