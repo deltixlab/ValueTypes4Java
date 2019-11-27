@@ -68,7 +68,7 @@ public class MethodNode extends org.objectweb.asm.tree.MethodNode {
     MethodNode(final TranslationState state, int access, String name, String desc, String signature, String[] exceptions,
                ClassVisitor outerCv) {
 
-        super(ASM6, access, name, desc, signature, exceptions);
+        super(ASM7, access, name, desc, signature, exceptions);
 
         this.state          = state;
         this.outerCv        = outerCv;

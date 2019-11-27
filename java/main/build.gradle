@@ -64,8 +64,8 @@ publishing {
 
 
 dependencies {
-    compile 'org.ow2.asm:asm-tree:6.1.1'
-    compile 'org.ow2.asm:asm-util:6.1.1'
+    compile 'org.ow2.asm:asm-tree:7.2'
+    compile 'org.ow2.asm:asm-util:7.2'
     compile 'org.json:json:20171018'
 }
 
