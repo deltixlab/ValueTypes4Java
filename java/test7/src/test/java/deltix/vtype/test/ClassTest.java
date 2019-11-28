@@ -170,7 +170,7 @@ public class ClassTest {
 
     private static final class Clazz {
 
-        private DateTime field = null;  // NOTE: Future version will auto-initialize noninitialized fields to null
+        private DateTime field = null;  // NOTE: not initialized scalar VT fields are automatically set to null
         private DateTime[] array1;
         private DateTime[][] array2;
 
