@@ -22,6 +22,7 @@ import deltix.vtype.annotations.ValueTypeSuppressWarnings;
 import deltix.vtype.annotations.ValueTypeTrace;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertFalse;
@@ -63,6 +64,7 @@ public class TestRefCompare {
     }
 
     @Test
+    @ValueTypeSuppressWarnings({"refValueCompare", "uninitialized", "frameSyncUnboxing", "frameSyncBoxing"})
     public void testNullCompare1() {
         DateTime aNull = null;
         DateTime bNull = DateTime.NULL;
@@ -79,6 +81,7 @@ public class TestRefCompare {
     }
 
     @Test
+    @ValueTypeSuppressWarnings({"refValueCompare", "uninitialized", "frameSyncUnboxing", "frameSyncBoxing"})
     public void testNullCompare2() {
         Object oNull = null;
         DateTime aNull = null;
@@ -103,7 +106,8 @@ public class TestRefCompare {
     }
 
     @Test
-    public void testNullCompare3() {
+    @ValueTypeSuppressWarnings({"refValueCompare", "refArs", "frameSyncUnboxing", "frameSyncBoxing"})
+    public void testNullCompare3() throws ParseException {
 
         DateTime a = DateTime.now();
 
@@ -111,7 +115,7 @@ public class TestRefCompare {
             DateTime aNull = null;
             assertTrue(aNull != a);
             assertFalse(a == aNull);
-            aNull = DateTime.now();
+            aNull = DateTime.fromString(a.toString());
             assertTrue(aNull == a);
             assertFalse(a != aNull);
         }
@@ -127,7 +131,7 @@ public class TestRefCompare {
 
 
     @Test
-    @ValueTypeSuppressWarnings({"refAssign", "refCompare"})
+    @ValueTypeSuppressWarnings({"refAssign", "refArgs", "refCompare"})
     public void testRefCompare1() {
         AtomicReference<DateTime> dtAtomicRef1 = new AtomicReference<>(DateTime.create(12345));
         boolean a = false;
@@ -140,7 +144,7 @@ public class TestRefCompare {
     }
 
     @Test
-    @ValueTypeSuppressWarnings({"refAssign", "refCompare"})
+    @ValueTypeSuppressWarnings({"refAssign", "refArgs", "refCompare"})
     public void testRefCompare2() {
         AtomicReference<DateTime> dtAtomicRef1 = new AtomicReference<>(DateTime.create(12345));
         AtomicReference<DateTime> dtAtomicRef2 = new AtomicReference<>(DateTime.create(12345));
