@@ -20,6 +20,7 @@ import deltix.vtype.annotations.ValueTypeCommutative;
 
 import java.text.FieldPosition;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -38,17 +39,39 @@ final public class Utils {
 
     private Utils() {}
 
+    // AdHoc DateTime parsing
     public static long fromString(String str) throws ParseException {
         long dt;
-        if (str.contains("-")) {
-            dt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(str).getTime() * NANOS_PER_MILLIS;
-        } else if (str.contains("/")) {
-            dt = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss").parse(str).getTime() * NANOS_PER_MILLIS;
-        }
-        else {
-            throw new ParseException(new StringBuilder("Unknown DateTime format: ").append(str).toString(), 0);
-        }
+        int idx;
+        SimpleDateFormat sdf;
+        do {
+            if ((idx = str.indexOf('-')) > 0) {
+                sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                break;
+            } else if ((idx = str.indexOf('/')) > 0) {
+                sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+                break;
+            }
 
+            throw new ParseException(new StringBuilder("Unknown DateTime format: ").append(str).toString(), 0);
+        } while(false);
+
+        ParsePosition pos = new ParsePosition(0);
+        Date result = sdf.parse(str, pos);
+        if (pos.getIndex() == 0)
+            throw new ParseException(String.format("Unparseable date: \"%s\"" , str), pos.getErrorIndex());
+
+        dt = result.getTime() * NANOS_PER_MILLIS;
+        if ((idx = str.indexOf('.', pos.getIndex())) > 0) {
+            long m = 100_000_000L;
+            char ch;
+            boolean z = (char)10 < '9';
+            while ((ch = (char)(str.charAt(++idx) - '0')) < (char)10) {
+                dt += m * ch;
+                if ((m /= 10) == 0)
+                    break;
+            }
+        }
         return dt;
     }
 
