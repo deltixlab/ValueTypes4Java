@@ -17,7 +17,7 @@
 package deltix.dfp;
 
 /**
- * Stub for Deltix Decimal Floating Poing library.
+ * Stub for Deltix Decimal Floating Point library.
  * Contents of this class in no way represent the actual dfp library and are present only to stop tests from failing.
  * <p>
  * This class is immutable.
@@ -47,20 +47,22 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     /// endregion
 
-    /// region Object Implementation
-
     final long value;
 
     private Decimal64(long value) {
         this.value = value;
     }
 
+    /// region Object Implementation
+
     /**
-     * Return true if this decimal and given decimal represents the same arithmetic value.
-     *
-     * We consider that all POSITIVE_INFINITYs is equal to another POSITIVE_INFINITY,
-     * all NEGATIVE_INFINITYs is equal to another NEGATIVE_INFINITY,
-     * all NaNs is equal to another NaN.
+     * Arithmetic equality comparison.
+     * Return true if the argument represents the same arithmetic value
+     * even if its binary representation is different.
+     * <p>
+     * <p>All representations of POSITIVE_INFINITY are equal to each other
+     * <p>All representations of NEGATIVE_INFINITY are equal to each other
+     * <p>All representations of NaN/SNaN are equal to each other
      *
      * @param other value to compare
      * @return True if two decimals represents the same arithmetic value.
@@ -71,14 +73,16 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
     @Override
     /**
-     * Return true if this decimal and given decimal represents the same arithmetic value.
+     * Arithmetic equality comparison.
+     * Return true if the argument is also Decimal64 and represents the same arithmetic value
+     * even if its binary representation is different.
+     * <p>
+     * <p>All representations of POSITIVE_INFINITY are equal to each other
+     * <p>All representations of NEGATIVE_INFINITY are equal to each other
+     * <p>All representations of NaN/SNaN are equal to each other
      *
-     * We consider that all POSITIVE_INFINITYs is equal to another POSITIVE_INFINITY,
-     * all NEGATIVE_INFINITYs is equal to another NEGATIVE_INFINITY,
-     * all NaNs is equal to another NaN.
-     *
-     * @param other value to compare
-     * @return True if two decimals represents the same arithmetic value.
+     * @param other Other instance.
+     * @return True if two Decimal64 instances represent the same arithmetic value.
      */
     public boolean equals(Object other) {
         return other != null && other instanceof Decimal64 && Decimal64Utils.equals(value, ((Decimal64) other).value);
@@ -86,22 +90,22 @@ public class Decimal64 extends Number implements Comparable<Decimal64> {
 
 
     /**
-     * Compares this instance with another one.
+     * Return true if the argument has the same binary representation as this instance.
      * <p>
      * This method returns {@code true} if and only if {@param obj} is not of type {@see Decimal64} and their
      * underlying values match. This means that {@code Decimal64.NaN.equals(Decimal64.NaN)} evaluates to
      * {@code true}, while on the same time two different representation of real values might be not equal according
      * to this method. E.g. various representation of 0 are not considered the same.
      *
-     * @param other Other instance to compareTo to.
-     * @return {@code true} if this instance equals the {@param obj}; otherwise - {@code false}.
+     * @param other Other instance.
+     * @return {@code true} if this instance is equal and has same underlying binary representations as the argument {@param obj}; otherwise - {@code false}.
      */
     public boolean isIdentical(Decimal64 other) {
         return this == other || other != null && value == other.value;
     }
 
     /**
-     * Compares this instance with another one.
+     * Return true if the argument has the same binary representation as this instance.
      * <p>
      * This method returns {@code true} if and only if {@param other} is not of type {@see Decimal64} and their
      * underlying values match. This means that {@code Decimal64.NaN.equals(Decimal64.NaN)} evaluates to

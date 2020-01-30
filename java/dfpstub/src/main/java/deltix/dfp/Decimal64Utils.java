@@ -64,6 +64,10 @@ public class Decimal64Utils {
      * We consider that all POSITIVE_INFINITYs have equal hashCode,
      * all NEGATIVE_INFINITYs have equal hashCode,
      * all NaNs have equal hashCode.
+     * <p>
+     * <p>All representations of POSITIVE_INFINITY have same hashCode
+     * <p>All representations of NEGATIVE_INFINITY have same hashCode
+     * <p>All representations of NaN/SNaN have same hashCode
      *
      * @param value Given decimal.
      * @return HashCode of given decimal.
@@ -78,15 +82,15 @@ public class Decimal64Utils {
     }
 
     /**
-     * Return true if two decimals represents the same arithmetic value.
-     *
-     * We consider that all POSITIVE_INFINITYs is equal to another POSITIVE_INFINITY,
-     * all NEGATIVE_INFINITYs is equal to another NEGATIVE_INFINITY,
-     * all NaNs is equal to another NaN.
+     * Return true if two decimals represent the same arithmetic value.
+     * <p>
+     * <p>All representations of POSITIVE_INFINITY are equal to each other
+     * <p>All representations of NEGATIVE_INFINITY are equal to each other
+     * <p>All representations of NaN/SNaN are equal to each other
      *
      * @param a First argument
      * @param b Second argument
-     * @return True if two decimals represents the same arithmetic value.
+     * @return True if two decimals represent the same arithmetic value.
      */
     public static boolean equals(final long a, final long b) {
         long canonizedA = canonize(a);
@@ -105,15 +109,35 @@ public class Decimal64Utils {
         return a == b;
     }
 
+    /**
+     * Return true if the second argument is an instance of Decimal64 and has the same binary representation.
+     * @param a DFP argument.
+     * @param b Object that is possibly an instance of Decimal64.
+     * @return true if the second argument is an instance of Decimal64, that is equal to the left argument
+     * and has the same binary representation.
+     */
     public static boolean isIdentical(final long a, final Object b) {
         return (b == null && NULL == a) || (b instanceof Decimal64 && (a == ((Decimal64) b).value));
     }
 
+    /**
+     * Return true if the second argument is an instance of Decimal64 and represents the same arithmetic value.
+     * @see #equals(long, long)
+     * @param a DFP argument.
+     * @param b Object that is possibly an instance of Decimal64.
+     * @return true if the second argument is an instance of Decimal64, that is equal to the left arguments.
+     */
     public static boolean equals(final long a, final Object b) {
         return (b == null && NULL == a)
             || (b instanceof Decimal64 && equals(a, ((Decimal64) b).value));
     }
 
+    /**
+     * Check if the DFP value represents null (conversion to Decimal64 instance produces null reference)
+     * <p>Corresponds to comparing Decimal64 instance with null reference.
+     * @param value DFP value to check
+     * @return True if null, false otherwise
+     */
     public static boolean isNull(final long value) {
         return NULL == value;
     }
