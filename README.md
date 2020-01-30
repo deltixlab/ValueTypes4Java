@@ -9,7 +9,7 @@ Transformed classes operate in a way similar to C# structs, but somewhat limited
 Warnings are generated if any redundant operations are generated during code translation, usually to support automatic boxing/unboxing in a multitude of contexts. Warnings try to dive a detailed description of the problem and offer the advice about how it may be avoided.
 If the advice given in the warnings is followed, the generated code will be mostly the same as the manually written code that operates on `long`s. User should not expect Value Types to operate efficiently with Generic collections or with Java reflection facilities.
 
-Current version of the Value Type Agent (0.8.9+) is considered to be in beta stage. It performs the work it is intended to do, but some corners were cut, significant amount of cruft has accumulated during the experimental phase of the development.
+Current version of the Value Type Agent (0.9.2+) is considered to be in beta stage. It performs the work it is intended to do, but some corners were cut, significant amount of cruft has accumulated during the experimental phase of the development.
 ASM framework is used to perform the code transformation. Efforts were made to ensure that class loading is not significantly slowed down by the VT Agent and the amount of generated garbage is reduced, but many optimization opportunities still remain.
 
 ### Installing and using the ValueType agent
@@ -106,6 +106,11 @@ Value Type Agent
 
 ### Version history:
 
+* V0.9.2 OSS
+  - Upgraded to use ASM 7.2.
+  - Builds and tests with Java 11. Java 7 support remains, but needs Java 8+ to compile.
+  - No substantial transformation code changes since 0.8.18 (yet)
+  - Tests improved
 * V0.9.1 OSS
   - will not try to transform already transformed class if a (broken?)classloader sends it again
   - Better support for using 2 or more different Value Types in same method signature
