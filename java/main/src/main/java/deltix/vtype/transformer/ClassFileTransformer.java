@@ -26,7 +26,7 @@ import java.security.ProtectionDomain;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.objectweb.asm.ClassWriter.COMPUTE_MAXS;
-import static org.objectweb.asm.Opcodes.ASM6;
+import static org.objectweb.asm.Opcodes.ASM7;
 
 
 class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer {
@@ -238,7 +238,7 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
                     System.out.printf("Start ClassReader for class: %s%n", className);
                 }
 
-                org.objectweb.asm.ClassVisitor cv = new ClassVisitor(ASM6, prev, state);
+                org.objectweb.asm.ClassVisitor cv = new ClassVisitor(ASM7, prev, state);
                 cr.accept(cv, 0);
 
                 boolean transformed = state.classWasTransformed;
@@ -289,7 +289,8 @@ class ClassFileTransformer implements java.lang.instrument.ClassFileTransformer 
             }
 
         } catch (Throwable e) {
-            System.err.println("VT Agent: Exception!");
+            onFailedClass(className);
+            System.err.printf("VT Agent: Exception! Class: %s", className);
             e.printStackTrace();
         }
 

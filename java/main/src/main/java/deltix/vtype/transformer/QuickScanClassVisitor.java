@@ -26,7 +26,7 @@ import java.util.HashSet;
 
 import static deltix.vtype.transformer.AsmUtil.parseMethod;
 import static deltix.vtype.type.TypeId.isVt;
-import static org.objectweb.asm.Opcodes.ASM6;
+import static org.objectweb.asm.Opcodes.ASM7;
 
 public class QuickScanClassVisitor extends org.objectweb.asm.ClassVisitor {
     private final Mapping mapping;
@@ -56,7 +56,7 @@ public class QuickScanClassVisitor extends org.objectweb.asm.ClassVisitor {
 
 
     public static QuickScanClassVisitor findVt(ClassReader cr, Mapping mapping) {
-        QuickScanClassVisitor vTypeScan = new QuickScanClassVisitor(ASM6, null, mapping);
+        QuickScanClassVisitor vTypeScan = new QuickScanClassVisitor(ASM7, null, mapping);
         cr.accept(vTypeScan, 0);
         return vTypeScan;
     }

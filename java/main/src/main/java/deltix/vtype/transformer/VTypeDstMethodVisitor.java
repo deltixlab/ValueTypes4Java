@@ -21,7 +21,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 
 import static org.objectweb.asm.Opcodes.ACC_STATIC;
-import static org.objectweb.asm.Opcodes.ASM6;
+import static org.objectweb.asm.Opcodes.ASM7;
 
 public class VTypeDstMethodVisitor extends MethodVisitor {
     private final ClassDef classDef;
@@ -32,7 +32,7 @@ public class VTypeDstMethodVisitor extends MethodVisitor {
     boolean isCommutative = false; // TODO: Using this is only a minor optimization, could be restored later
 
     public VTypeDstMethodVisitor(int access, String name, String desc, ClassDef classDef, MethodVisitor mv) {
-        super(ASM6, mv);
+        super(ASM7, mv);
         this.impl = null;
         this.access = access;
         this.name = name;
